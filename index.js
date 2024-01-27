@@ -9,10 +9,11 @@ const pool = mariadb.createPool({
     host: 'localhost', 
     user:'shootmgr', 
     password: 'DavidNuthall', 
-    database: 'shooting'
+    database: 'shooting',
+    connectTimeout: 20000,
+    connectionLimit: 20,
+    multipleStatements: true
 });
-
-
 
 pool.getConnection()
     .then(conn => {
@@ -37,11 +38,11 @@ pool.getConnection()
 //     }
 // });
 
-app.get('/add/:name/:score/:competition/:date', async (req, res) => {
+app.get('/add/:name/:score/:competition/:date/:id', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rows = await conn.query("INSERT INTO scores (name, score, competition, date) VALUES (?, ?)", [req.params.name, req.params.score, req.params.competition, req.params.date]);
+        const rows = await conn.query("INSERT INTO scores (name, score, competition, date, id) VALUES (?, ?, ?, ?, ?)", [req.params.name, req.params.score, req.params.competition, req.params.date]);
         res.sendStatus(201);
     } catch (err) {
         console.log("Error executing query: ", err);

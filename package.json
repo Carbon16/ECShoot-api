@@ -1,0 +1,16 @@
+{
+  "name": "ecshoot-api",
+  "version": "0.1.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Leo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mariadb": "^3.2.3",
+    "nord": "^0.2.1"
+  }
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings</title>
+    <!-- add nice styles -->
+    <style>
+        /* Define dark theme colors */
+        :root {
+            --nordic-background: #2E3440;
+            --nordic-primary: #88C0D0;
+            --nordic-secondary: #5E81AC;
+            --nordic-text: #D8DEE9;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: var(--nordic-background);
+            color: var(--nordic-text);
+        }
+
+        h1, h2, input, button {
+            font-family: sans-serif;
+        }
+
+        h1 {
+            font-size: 40px;
+            text-align: center;
+        }
+
+        /* Style the login form */
+        #loginForm {
+            margin: auto;
+            width: 90%;
+            border: 3px solid var(--nordic-primary);
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--nordic-background);
+            font-size: 20px;
+        }
+
+        /* Style the submit button */
+        #yeet {
+            display: block;
+            width: 100%;
+            background-color: var(--nordic-primary);
+            border: none;
+            color: var(--nordic-background);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        /* Style the settings and forms */
+        #settings, #settingsForm {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 20px;
+        }
+
+        /* Styles for smaller screens */
+        @media only screen and (max-width: 1000px) {
+            #loginForm {
+                width: 100%;
+            }
+            /* font bigger */
+            h1, h2, input, button, a{
+                font-size: 50px;
+            }
+            /* make checkbox bigger */
+            #publicScores {
+                width: 50px;
+                height: 50px;
+            }
+            /* make all text and labels bigger */
+            label {
+                font-size: 30px;
+            }
+            /* make submit button bigger */
+            #yeet {
+                font-size: 50px;
+            }
+            
+        }
+    </style>
+</head>
+<body>
+    <h1>Settings</h1>
+    <!-- toggle to turn off public scores -->
+    <form id="loginForm">
+        <label for="publicScores">Public Scores</label>
+        <input type="checkbox" id="publicScores" name="publicScores">
+        <!-- new password -->
+        <br>
+        <br>
+        <label for="newPassword">New Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+        <br>
+    </form>
+    <button id="yeet">Submit</button>
+        <script>
+            getCookie = function (name) {
+                var value = '; ' + document.cookie;
+                var parts = value.split('; ' + name + '=');
+                if (parts.length == 2) return parts.pop().split(';').shift();
+            };
+
+        var username = getCookie('username');
+        var password = getCookie('password');
+
+        // Add a space after the comma if it doesn't exist
+        username = username.replace(/,([^ ])/, ', $1');
+            window.onload = function() {
+                // fetch /public/username cookie
+                fetch('/public/' + username) 
+                    .then(response => {
+                        if (response.status === 200) {
+                            document.getElementById("publicScores").checked = true;
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            };
+        
+            // on submit
+            document.getElementById("yeet").onclick = function() {
+                // get new password
+                var newPassword = document.getElementById("password").value;
+                var oldPassword = password;
+                // get public scores
+                var publicScores = document.getElementById("publicScores").checked;
+                // send to server
+                if (newPassword != "") {
+                    fetch(`/setpwd/${username}/${oldPassword}/${newPassword}`, {
+                        method: 'POST',
+                    })
+                    .then(response => {
+                        if (response.status == 200) {
+                            //set both passwoard and useranme cookies
+                            document.cookie = `password=${newPassword}`;
+                        } else {
+                            alert("Incorrect password!");
+                            // clear cookies
+                            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                            document.cookie = "password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                            window.location.href = '/login';
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+
+                fetch(`/setpub/${username}/${publicScores}`, {
+                    method: 'POST',
+                })
+                .then(response => {
+                        if (response.status == 200) {
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            };
+        </script>
+</body>
+</html>

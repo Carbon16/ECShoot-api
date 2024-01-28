@@ -55,7 +55,6 @@
             #select a:hover {
                 background-color: #5E81AC;
                 color: #ECEFF4;
-                cursor: crosshair;
             }
             #select a.active {
                 background-color: #5E81AC;
@@ -106,6 +105,7 @@
             #data-area tr:hover {
                 background-color: #5E81AC;
                 color: #ECEFF4;
+                cursor: cell;
             }
             .grid {
         display: grid;
@@ -142,26 +142,40 @@
             });
         }
         function byDate() {
-            fetch('/byDate', {
+            fetch('/getdates', {
                 method: 'GET',
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('data-area').innerHTML = data;
+                // turn the data into a table
+                var table = '<table><tr><th>Name</th><th>Average</th><th>Number of Scores</th></tr>';
+                for (var i = 0; i < data.length; i++) {
+                    table += '<tr><td><a onclick="getDate(\'' + data[i].date + '\')">' + data[i].date + '</a></td><td>' + data[i].averageScore + '</td><td>' + data[i].scoreCount + '</td></tr>';
+                }
+                table += '</table>';
+                document.getElementById('data-area').innerHTML = table;
             });
         }
         function byComp() {
-            fetch('/byComp', {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('data-area').innerHTML = data;
-            });
+            alert('Not implemented yet')
         }
 
         getUser = function (name) {
             fetch(`/byuser/${name}`, {
+                method: 'GET',
+            })
+            .then(response => response.text()) // Treat the response as text
+            .then(data => {
+                document.getElementById('data-area').innerHTML = data; // Insert the HTML string into the DOM
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('data-area').innerHTML = 'An error occurred.';
+            });
+        }
+
+        getDate = function (name) {
+            fetch(`/bydate/${name}`, {
                 method: 'GET',
             })
             .then(response => response.text()) // Treat the response as text
@@ -185,7 +199,7 @@
             <a onclick="byUser()">By User</a>
             <a onclick="byDate()">By Date</a>
             <a onclick="byComp()">By Competition</a>
-            <a href="/addp">Add Score</a>
+            <!-- <a href="/addp">Add Score</a> -->
         <div>
         <div id="data-area">
 

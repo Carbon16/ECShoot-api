@@ -257,7 +257,7 @@ app.get('/', async (req, res) => {
             </style>
         </head>
         <body>
-        <button onclick="window.location.href = '/login.html';">Login</button>
+        <button onclick="window.location.href = '/login';">Login</button>
             <h1>Leaderboard</h1>
             ${leaderboard.map(user => `
                 <div class="card">

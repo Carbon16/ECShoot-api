@@ -140,11 +140,11 @@
 
         // Add a space after the comma if it doesn't exist
         username = username.replace(/,([^ ])/, ', $1');
-        document.getElementById('Time').src = `${hos}/images/${username}/Time.png`;
-        document.getElementById('density').src = `${hos}/images/${username}/density.png`;
-        document.getElementById('boxplot').src = `${hos}/images/${username}/boxplot.png`;
+        document.getElementById('Time').src = `/images/${username}/Time.png`;
+        document.getElementById('density').src = `/images/${username}/density.png`;
+        document.getElementById('boxplot').src = `/images/${username}/boxplot.png`;
 
-        fetch(`${hos}/scores/${username}/${password}`, {
+        fetch(`/scores/${username}/${password}`, {
             method: 'GET',
         })
         .then(response => response.json())

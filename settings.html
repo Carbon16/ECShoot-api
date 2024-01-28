@@ -134,7 +134,7 @@
                 var publicScores = document.getElementById("publicScores").checked;
                 // send to server
                 if (newPassword != "") {
-                    fetch(`${hos}/setpwd/${username}/${oldPassword}/${newPassword}`, {
+                    fetch(`/setpwd/${username}/${oldPassword}/${newPassword}`, {
                         method: 'POST',
                     })
                     .then(response => {
@@ -152,7 +152,7 @@
                     .catch(error => console.error('Error:', error));
                 }
 
-                fetch(`${hos}/setpub/${username}/${publicScores}`, {
+                fetch(`/setpub/${username}/${publicScores}`, {
                     method: 'POST',
                 })
                 .then(response => {

@@ -6,7 +6,7 @@ const port = 80
 const { spawn } = require('child_process');
 
 const pool = mariadb.createPool({
-    host: '172.0.0.1', 
+    host: '127.0.0.1', 
     user:'shootmgr', 
     password: 'DavidNuthall', 
     database: 'shooting',

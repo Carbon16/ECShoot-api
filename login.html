@@ -89,14 +89,13 @@
     <br>
     <i>Your username is "Lastname, F". For example, "Skingley, L". The default password is "Smallbore", please update this in settings once you have logged in.</i>
     <script>
-        const hos = 'lgsk.tech'
         async function yeet() {
             event.preventDefault();
             var username = document.getElementById('username').value;
             var password = document.getElementById('password').value;
             console.log(username);
 
-            await fetch(`${hos}/auth/${username}/${password}`, {
+            await fetch(`/auth/${username}/${password}`, {
                 method: 'POST',
             })
             .then(response => {

@@ -153,6 +153,7 @@
         // check if the user is an admin
         var username = getCookie('username');
         var password = getCookie('password');
+        username = username.replace(/,([^ ])/, ', $1');
 
         fetch(`/perm/${username}` , {
             method: 'GET',
@@ -170,7 +171,6 @@
         const hos = 'lgsk.tech';
 
         // Add a space after the comma if it doesn't exist
-        username = username.replace(/,([^ ])/, ', $1');
         document.getElementById('Time').src = `/images/${username}/Time.png`;
         document.getElementById('density').src = `/images/${username}/density.png`;
         document.getElementById('boxplot').src = `/images/${username}/boxplot.png`;

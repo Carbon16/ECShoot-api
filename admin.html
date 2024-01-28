@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin </title>
+        <style>
+            /* background */
+            body {
+                font-family: sans-serif;
+                background-color: #2E3440;
+                color: #ECEFF4;
+            }
+            /* navbar */
+            #navbar {
+                overflow: hidden;
+                background-color: #2E3440;
+                position: fixed;
+                top: 0;
+                width: 100%;
+                border-bottom: 3px solid #5E81AC;
+            }
+            #navbar a {
+                float: left;
+                display: block;
+                color: #ECEFF4;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 17px;
+            }
+            #navbar a:hover {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+            }
+            #navbar a.active {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+            }
+            #select {
+                overflow: hidden;
+                background-color: #2E3440;
+                position: fixed;
+                top: 50px;
+                width: 100%;
+                border-bottom: 3px solid #5E81AC;
+            }
+            #select a {
+                float: left;
+                display: block;
+                color: #ECEFF4;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 17px;
+            }
+            #select a:hover {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+                cursor: crosshair;
+            }
+            #select a.active {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+            }
+
+            /* data area */
+            #data-area {
+                padding: 50px 16px;
+                margin-top: 50px;
+                height: 1500px;
+                /* Used in this example to enable scrolling */
+                overflow-y: scroll;
+                overflow-x: hidden;
+                text-align: center;
+                /* default empty formatiing */
+                font-family: sans-serif;
+                font-size: 20px;
+                /* placeholder style */
+                color: #ECEFF4;
+                min-width: 65%;
+                min-height: 25%;
+            }
+            #data-area table {
+                border-collapse: collapse;
+                width: 100%;
+                color: #ECEFF4;
+                font-family: monospace;
+                font-size: 25px;
+                text-align: left;
+            }
+            #data-area th {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+            }
+            #data-area tr:nth-child(even) {
+                background-color: #2E3440;
+            }
+            #data-area tr:nth-child(odd) {
+                background-color: #4C566A;
+            }
+            #data-area td {
+                border: 3px solid #5E81AC;
+            }
+            #data-area th {
+                border: 3px solid #5E81AC;
+            }
+            #data-area tr:hover {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+            }
+            .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+    .card {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    html, body {
+        height: auto;
+        overflow: auto;
+    }
+        </style>
+    </head>
+    <script>
+        // create the different views using fetch()
+        function byUser() {
+            // make a table of names, aveages, and number of scores
+            fetch('/getusers', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                // turn the data into a table
+                var table = '<table><tr><th>Name</th><th>Average</th><th>Number of Scores</th></tr>';
+                for (var i = 0; i < data.length; i++) {
+                    table += '<tr><td><a onclick="getUser(\'' + data[i].name + '\')">' + data[i].name + '</a></td><td>' + data[i].averageScore + '</td><td>' + data[i].scoreCount + '</td></tr>';
+                }
+                table += '</table>';
+                document.getElementById('data-area').innerHTML = table;
+            });
+        }
+        function byDate() {
+            fetch('/byDate', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('data-area').innerHTML = data;
+            });
+        }
+        function byComp() {
+            fetch('/byComp', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('data-area').innerHTML = data;
+            });
+        }
+
+        getUser = function (name) {
+            fetch(`/byuser/${name}`, {
+                method: 'GET',
+            })
+            .then(response => response.text()) // Treat the response as text
+            .then(data => {
+                document.getElementById('data-area').innerHTML = data; // Insert the HTML string into the DOM
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('data-area').innerHTML = 'An error occurred.';
+            });
+        }
+    </script>
+    <body>
+        <div id="navbar">
+        <a href="/settings">Settings</a>
+        <a href="/user">User</a>
+        </div>
+        <i>Welcome, <a id="nom"></a></i>
+        <br>
+        <div id="select">
+            <a onclick="byUser()">By User</a>
+            <a onclick="byDate()">By Date</a>
+            <a onclick="byComp()">By Competition</a>
+            <a href="/addp">Add Score</a>
+        <div>
+        <div id="data-area">
+
+        </div>
+    </body>
+    <script>
+        window.onload = function() {
+            // get username cookie
+            var username = getCookie('username');
+            // Add a space after the comma if it doesn't exist
+            username = username.replace(/,([^ ])/, ', $1');
+            document.getElementById('nom').innerHTML = username;
+        };
+    </script>
+</html>

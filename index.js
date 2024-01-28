@@ -76,6 +76,139 @@ app.get('/login', async (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
 
+app.get('/getusers', async (req, res) => {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query("SELECT name, AVG(score) as averageScore, COUNT(score) as scoreCount FROM scores GROUP BY name");
+        const data = rows.map(row => ({
+            ...row,
+            averageScore: row.averageScore.toString(),
+            scoreCount: row.scoreCount.toString()
+        }));
+        res.json(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    } finally {
+        if (conn) conn.end();
+    }
+});
+
+
+app.get('/byuser/:username', async (req, res) => {
+    // return a table and average of the scores for a given user
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query("SELECT score, competition, date FROM scores WHERE name = ?", [req.params.username]);
+        // format date to be more readable
+        rows.forEach(row => {
+            let date = new Date(row.date);
+            let formattedDate = `${date.getMonth()+1}-${date.getDate()}-${date.getFullYear()}`;
+            row.date = formattedDate;
+        });
+        let totalScore = 0;
+        let totalShoots = rows.length;
+
+        rows.forEach(row => {
+            totalScore += row.score;
+        });
+
+        let averageScore = totalScore / totalShoots;
+        let table = `
+        <html>
+        <head>
+            <style>
+            body {
+                background-color: #2E3440;
+                color: #ECEFF4;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            h1 {
+                text-align: center;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                text-align: left;
+                padding: 8px;
+            }
+            tr:nth-child(even) {background-color: #4C566A;}
+            </style>
+        </head>
+        <body>
+            <h1>${req.params.username}</h1>
+            <p>Average Score: ${averageScore}</p>
+            <p>Total Shoots: ${totalShoots}</p>
+            <table>
+                <tr>
+                    <th>Score</th>
+                    <th>Competition</th>
+                    <th>Date</th>
+                </tr>
+                ${rows.map(row => `
+                    <tr>
+                        <td>${row.score}</td>
+                        <td>${row.competition}</td>
+                        <td>${row.date}</td>
+                    </tr>
+                `).join('')}
+            </table>
+        </body>
+    </html>
+        `;
+        res.send(table);
+    } finally
+    {
+        if (conn) conn.end();
+    }
+});
+
+
+app.get('/admin/:u/:p', async (req, res) => {
+    //check the password against the unsername in the api table
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query("SELECT password FROM api WHERE name = ?", [req.params.u]);
+        if (rows[0].password === req.params.p) {
+            // check if user has admin permission
+            const rows = await conn.query("SELECT admin FROM api WHERE name = ?", [req.params.u]);
+            if (rows[0].admin === 1) {
+                res.sendFile(path.join(__dirname, 'admin.html'));
+            } else {
+                res.sendStatus(401);
+            }
+    }} catch (err) {
+        console.log("Error executing query: ", err);
+        res.status(500).send({error: err});
+    } finally {
+        if (conn) conn.end();
+    }
+});
+
+app.get('/perm/:u', async (req, res) => {
+    // check if user has admin permission 
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query("SELECT admin FROM api WHERE name = ?", [req.params.u]);
+        if (rows[0].admin === 1) {
+            res.sendStatus(200);
+        } else {
+            res.sendStatus(401);
+        }
+    } catch (err) {
+        console.log("Error executing query: ", err);
+        res.status(500).send({error: err});
+    } finally {
+        if (conn) conn.end();
+    }
+});
+
 app.post('/auth/:username/:password', async (req, res) => {
     //check the password against the unsername in the api table
     let conn;

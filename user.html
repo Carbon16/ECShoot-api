@@ -42,17 +42,6 @@
                 color: #2E3440;
             }
             /* make pretty links */
-            a {
-                color: #5E81AC;
-                /* make it look nicer */
-                text-decoration: none;
-                /* make it look like a button */
-                padding: 10px;
-                border: 3px solid #5E81AC;
-                border-radius: 10px;
-                background-color: #2E3440;
-                color: #5E81AC;
-            }
             /* make bigger on mobile */
             @media only screen and (max-width: 600px) {
                 a {
@@ -113,11 +102,39 @@
                 white-space: nowrap;
             }
         }
+        #navbar {
+                overflow: hidden;
+                background-color: #2E3440;
+                position: fixed;
+                top: 0;
+                width: 100%;
+                border-bottom: 3px solid #5E81AC;
+                font: 1em sans-serif;
+            }
+            #navbar a {
+                float: left;
+                display: block;
+                color: #ECEFF4;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 17px;
+            }
+            #navbar a:hover {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+            }
+            #navbar a.active {
+                background-color: #5E81AC;
+                color: #ECEFF4;
+            }
         </style>
     </head>
     <body>
         <br>
+        <div id="navbar">
         <a href="/settings">Settings</a>
+        </div>
         <div id="scores"></div>
         <div id="pics"></div>
         <div id="gallery" >
@@ -128,15 +145,29 @@
         </div>
     </body>
     <script>
-        const hos = 'lgsk.tech';
         getCookie = function (name) {
             var value = '; ' + document.cookie;
             var parts = value.split('; ' + name + '=');
             if (parts.length == 2) return parts.pop().split(';').shift();
         };
-
+        // check if the user is an admin
         var username = getCookie('username');
         var password = getCookie('password');
+
+        fetch(`/perm/${username}` , {
+            method: 'GET',
+        })
+        .then(response => {
+            if (response.status == 200) {
+                // add a link to the admin page
+                var navbar = document.getElementById('navbar');
+                var link = document.createElement('a');
+                link.href = `/admin/${username}/${password}`;
+                link.innerHTML = 'Admin';
+                navbar.appendChild(link);
+            }
+        });
+        const hos = 'lgsk.tech';
 
         // Add a space after the comma if it doesn't exist
         username = username.replace(/,([^ ])/, ', $1');

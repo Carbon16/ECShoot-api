@@ -116,7 +116,7 @@
         username = username.replace(/,([^ ])/, ', $1');
             window.onload = function() {
                 // fetch /public/username cookie
-                fetch(hos + '/public/' + username) 
+                fetch('/public/' + username) 
                     .then(response => {
                         if (response.status === 200) {
                             document.getElementById("publicScores").checked = true;

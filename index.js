@@ -6,13 +6,18 @@ const port = 80
 const { spawn } = require('child_process');
 
 const pool = mariadb.createPool({
-    host: 'localhost', 
+    host: '172.0.0.1', 
     user:'shootmgr', 
     password: 'DavidNuthall', 
     database: 'shooting',
     connectTimeout: 20000,
     connectionLimit: 20,
     multipleStatements: true
+});
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
 });
 
 pool.getConnection()
@@ -252,7 +257,7 @@ app.get('/', async (req, res) => {
             </style>
         </head>
         <body>
-        <button onclick="window.location.href = '/login';">Login</button>
+        <button onclick="window.location.href = '/login.html';">Login</button>
             <h1>Leaderboard</h1>
             ${leaderboard.map(user => `
                 <div class="card">

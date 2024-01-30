@@ -267,6 +267,7 @@ app.get('/admin/:u/:p', async (req, res) => {
             const rows = await conn.query("SELECT admin FROM api WHERE name = ?", [req.params.u]);
             if (rows[0].admin === 1) {
                 res.sendFile(path.join(__dirname, 'admin.html'));
+                await conn.query("INSERT INTO log (name, action) VALUES (?, ?)", [req.params.username, "User viewed admin page"]);
             } else {
                 res.sendStatus(401);
             }
@@ -305,6 +306,8 @@ app.post('/auth/:username/:password', async (req, res) => {
         const rows = await conn.query("SELECT password FROM api WHERE name = ?", [req.params.username]);
         if (rows[0].password === req.params.password) {
             res.sendStatus(200);
+            // add record to log table
+            await conn.query("INSERT INTO log (name, action) VALUES (?, ?)", [req.params.username, "User logged in"]);
         } else {
             res.sendStatus(401);
         }
@@ -333,6 +336,7 @@ app.post('/setpub/:username/:value', async (req, res) => {
         conn = await pool.getConnection();
         const rows = await conn.query("UPDATE api SET publicScore = ? WHERE name = ?", [req.params.value, req.params.username]);
         res.sendStatus(200);
+        await conn.query("INSERT INTO log (name, action) VALUES (?, ?)", [req.params.username, `Set publicScore to ${req.params.value}`]);
     } catch (err) {
         console.log("Error executing query: ", err);
         res.status(500).send({error: err});
@@ -351,6 +355,7 @@ app.post('/setpwd/:username/:old/:new', async (req, res) => {
         if (rows[0].password === req.params.old) {
             const rows = await conn.query("UPDATE api SET password = ? WHERE name = ?", [req.params.new, req.params.username]);
             res.sendStatus(200);
+            await conn.query("INSERT INTO log (name, action) VALUES (?, ?)", [req.params.username, "User changed password"]);
         } else {
             res.sendStatus(401);
         }
@@ -388,6 +393,7 @@ app.get('/scores/:username/:password', async (req, res) => {
         const rows = await conn.query("SELECT password FROM api WHERE name = ?", [req.params.username]);
         if (rows[0].password === req.params.password) {
             const rows = await conn.query("SELECT score, competition, date FROM scores WHERE name = ?", [req.params.username]);
+            await conn.query("INSERT INTO log (name, action) VALUES (?, ?)", [req.params.username, "Viewed scores"]);
             res.send(rows);
         } else {
             res.sendStatus(401);
@@ -470,7 +476,7 @@ app.get('/', async (req, res) => {
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 16px;
+                font-size: 25px;
                 border-radius: 10px;
                 margin: 10px;
                 cursor: pointer;

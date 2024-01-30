@@ -267,7 +267,7 @@ app.get('/admin/:u/:p', async (req, res) => {
             const rows = await conn.query("SELECT admin FROM api WHERE name = ?", [req.params.u]);
             if (rows[0].admin === 1) {
                 res.sendFile(path.join(__dirname, 'admin.html'));
-                await conn.query("INSERT INTO log (name, action) VALUES (?, ?)", [req.params.username, "User viewed admin page"]);
+                await conn.query("INSERT INTO log (name, action) VALUES (?, ?)", [req.params.u, "User viewed admin page"]);
             } else {
                 res.sendStatus(401);
             }

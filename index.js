@@ -474,6 +474,8 @@ app.get('/', async (req, res) => {
                 border-radius: 10px;
                 margin: 10px;
                 cursor: pointer;
+                width: 100%;
+                filter: invert(100%);
             }
             </style>
         </head>

@@ -126,7 +126,7 @@ app.get('/byuser/:username', async (req, res) => {
         // format date to be more readable
         rows.forEach(row => {
             let date = new Date(row.date);
-            let formattedDate = `${date.getMonth()+1}-${date.getDate()}-${date.getFullYear()}`;
+            let formattedDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
             row.date = formattedDate;
         });
         let totalScore = 0;
@@ -491,12 +491,10 @@ app.get('/', async (req, res) => {
             ${leaderboard.map(user => `
                 <div class="card">
                     <h2>${user.name}</h2>
-                    <h3>${user.scores[0]}</h3>
+                    <h3>${user.scores[0]}</h3><i></i>
                 </div>
             `).join('')}
         </body>
-        <script>
-        
     </html>
         `);
     } catch (err) {

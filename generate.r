@@ -1,5 +1,6 @@
 library(RMariaDB)
 library(ggplot2)
+library(zoo)
 
 shootingDB <- dbConnect(RMariaDB::MariaDB(), user='shootmgr', password="DavidNuthall", dbname='shooting', host='localhost')
 
@@ -23,7 +24,15 @@ for (s in shooters) {
     # Get the scores for the shooter
     scores<-dbRows[dbRows$name==s,]
     # Plot the scores over time
-    ggplot(scores, aes(x=date, y=score)) + geom_point() + geom_smooth(method=lm) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle(s)
+    scores$score_ma <- rollmean(scores$score, 5, fill = NA)
+
+# Plot the data
+# Plot the data
+    ggplot(scores, aes(x=date)) +
+        geom_point(aes(y=score)) +
+        geom_smooth(aes(y=score), method = "loess", color = 'red', se = FALSE) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle(s)
     # save the plot to /images/NameOfShooter/scoresOverTime.png
     ggsave(paste("images/", s, "/Time.png", sep=""))
     # Plot a density plot of the scores321333

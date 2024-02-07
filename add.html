@@ -121,73 +121,24 @@
         height: auto;
         overflow: auto;
     }
+    /* format form properly */
+    form {
+        margin-top: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    /* format form inputs properly */
+    input {
+        margin: 20px;
+    }
+    /* format form selects properly */
+    select {
+        margin: 20px;
+    }
+
         </style>
     </head>
-    <script>
-        // create the different views using fetch()
-        function byUser() {
-            // make a table of names, aveages, and number of scores
-            fetch('/getusers', {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                // turn the data into a table
-                var table = '<table><tr><th>Name</th><th>Average</th><th>Number of Scores</th></tr>';
-                for (var i = 0; i < data.length; i++) {
-                    table += '<tr><td><a onclick="getUser(\'' + data[i].name + '\')">' + data[i].name + '</a></td><td>' + data[i].averageScore + '</td><td>' + data[i].scoreCount + '</td></tr>';
-                }
-                table += '</table>';
-                document.getElementById('data-area').innerHTML = table;
-            });
-        }
-        function byDate() {
-            fetch('/getdates', {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                // turn the data into a table
-                var table = '<table><tr><th>Name</th><th>Average</th><th>Number of Scores</th></tr>';
-                for (var i = 0; i < data.length; i++) {
-                    table += '<tr><td><a onclick="getDate(\'' + data[i].date + '\')">' + data[i].date + '</a></td><td>' + data[i].averageScore + '</td><td>' + data[i].scoreCount + '</td></tr>';
-                }
-                table += '</table>';
-                document.getElementById('data-area').innerHTML = table;
-            });
-        }
-        function byComp() {
-            alert('Not implemented yet')
-        }
-
-        getUser = function (name) {
-            fetch(`/byuser/${name}`, {
-                method: 'GET',
-            })
-            .then(response => response.text()) // Treat the response as text
-            .then(data => {
-                document.getElementById('data-area').innerHTML = data; // Insert the HTML string into the DOM
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('data-area').innerHTML = 'An error occurred.';
-            });
-        }
-
-        getDate = function (name) {
-            fetch(`/bydate/${name}`, {
-                method: 'GET',
-            })
-            .then(response => response.text()) // Treat the response as text
-            .then(data => {
-                document.getElementById('data-area').innerHTML = data; // Insert the HTML string into the DOM
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('data-area').innerHTML = 'An error occurred.';
-            });
-        }
-    </script>
     <body>
         <div id="navbar">
         <a href="/settings">Settings</a>
@@ -195,13 +146,7 @@
         </div>
         <i>Welcome, <a id="nom"></a></i>
         <br>
-        <div id="select">
-            <a onclick="byUser()">By User</a>
-            <a onclick="byDate()">By Date</a>
-            <a onclick="byComp()">By Competition</a>
-            <!-- <a href="/addp">Add Score</a> -->
-        <div>
-        <div id="data-area">
+        <div id="ad">
 
         </div>
     </body>
@@ -226,8 +171,73 @@
 
         var navbar = document.getElementById('navbar');
         var link = document.createElement('a');
-        link.href = `/add/${username}/${password}`;
-        link.innerHTML = 'Add Scores';
+        link.href = `/admin/${username}/${password}`;
+        link.innerHTML = 'Admin';
         navbar.appendChild(link);
+                
+        // Fetch all users
+        fetch('/users')
+        .then(response => response.json())
+        .then(users => {
+            // Create form
+            const form = document.createElement('form');
+
+            // Create user dropdown
+            const userSelect = document.createElement('select');
+            userSelect.name = 'user';
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user;
+                option.text = user;
+                userSelect.appendChild(option);
+            });
+            form.appendChild(userSelect);
+
+            // Create score input
+            const scoreInput = document.createElement('input');
+            scoreInput.type = 'number';
+            scoreInput.name = 'score';
+            form.appendChild(scoreInput);
+
+            // Add form to the page
+            document.getElementById('ad').appendChild(form);
+        });
+
+        // add competitions dropdown from /competitions and submit button
+        fetch('/competitions')
+        .then(response => response.json())
+        .then(competitions => {
+            // Create form
+            const form = document.createElement('form');
+
+            // Create competition dropdown
+            const competitionSelect = document.createElement('select');
+            competitionSelect.name = 'competition';
+            competitions.forEach(competition => {
+                const option = document.createElement('option');
+                option.value = competition.id;
+                option.text = competition.name;
+                competitionSelect.appendChild(option);
+            });
+            form.appendChild(competitionSelect);
+
+            // Create submit button
+            const submitButton = document.createElement('input');
+            submitButton.type = 'submit';
+            form.appendChild(submitButton);
+
+            // Add form to the page
+            document.getElementById('ad').appendChild(form);
+        });
+
+        // on form submit, send a POST request to /addscore
+        document.getElementById('ad').addEventListener('submit', event => {
+            event.preventDefault();
+            let user = document.getElementById('ad').user.value;
+            let score = document.getElementById('ad').score.value;
+            let competition = document.getElementById('ad').competition.value;
+            alert(competition, user, score);
+            fetch(`/addscore/${user}/${score}/${competition}`)
+        });
     </script>
 </html>

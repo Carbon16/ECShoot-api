@@ -166,6 +166,12 @@
                 link.href = `/admin/${username}/${password}`;
                 link.innerHTML = 'Admin';
                 navbar.appendChild(link);
+                // add a link to the new record page
+                var link = document.createElement('a');
+                link.href = `/add/${username}/${password}`;
+                link.innerHTML = 'Add Scores';
+                navbar.appendChild(link);
+
             }
         });
         const hos = 'lgsk.tech';

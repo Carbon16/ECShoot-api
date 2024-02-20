@@ -30,7 +30,7 @@ for (s in shooters) {
 # Plot the data
     ggplot(scores, aes(x=date)) +
         geom_point(aes(y=score)) +
-        geom_smooth(aes(y=score), method = "loess", color = 'red', se = FALSE) +
+        geom_smooth(aes(y=score), method = "loess", color = 'red') +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         ggtitle(s)
     # save the plot to /images/NameOfShooter/scoresOverTime.png

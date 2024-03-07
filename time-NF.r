@@ -10,7 +10,7 @@ con <- dbConnect(MariaDB(), user='shootmgr', password='DavidNuthall', dbname='sh
 query <- "
     SELECT name, date, score
     FROM scores
-    WHERE not name='Whitley, B' and not name='Matson, I'
+    WHERE not name='Whitley, B' and not name='Hamlyn, H' and not name='Matson, I' and not name='Scott, O'
 "
 df <- dbGetQuery(con, query)
 

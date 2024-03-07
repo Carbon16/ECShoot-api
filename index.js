@@ -57,6 +57,10 @@ app.get('/add/:name/:score/:competition/:date/:id', async (req, res) => {
     }
 });
 
+app.get('/loaderio-248965f96e38a0964ec2336abd110a46/', async (req, res) => {
+    res.send('loaderio-248965f96e38a0964ec2336abd110a46');
+});
+
 app.get('/apiadd/:user/:pwd', async (req, res) => {
     let conn;
     try {

@@ -2,7 +2,7 @@ const mariadb = require('mariadb');
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = 80
+const port = 80;
 const { spawn } = require('child_process');
 
 const pool = mariadb.createPool({
@@ -507,6 +507,7 @@ app.get('/', async (req, res) => {
                 return 0; // a and b are equal
             } else if (i === a.scores.length) {
                 return 1; // a is less than b
+                
             } else if (i === b.scores.length) {
                 return -1; // a is greater than b
             } else {
